@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,7 +35,7 @@ class HistoryActivity : AppCompatActivity(), HistoryAdapter.OnItemClickCallback 
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        requestPermission()
+
         adapterHistory = HistoryAdapter(this, this)
         binding.rvHistory.layoutManager = LinearLayoutManager(this)
         binding.rvHistory.setHasFixedSize(true)
@@ -43,39 +44,22 @@ class HistoryActivity : AppCompatActivity(), HistoryAdapter.OnItemClickCallback 
                 binding.rvHistory.adapter = adapterHistory
                 adapterHistory.setCancerList(cancerList)
             }
-
         }
+
+        setSupportActionBar(binding.myToolbar)
+        supportActionBar?.title = "History"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }
 
-
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                Toast.makeText(this ,"Izin diberikan" ,Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this ,"Izin ditolak" ,Toast.LENGTH_SHORT).show()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
             }
         }
-
-    private fun requestPermission() {
-        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(
-                this ,
-                permission
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this ,arrayOf(permission) ,PERMISSION_REQUEST_CODE)
-        } else {
-            Toast.makeText(this ,"Izin diberikan" ,Toast.LENGTH_SHORT).show()
-        }
+        return super.onOptionsItemSelected(item)
     }
-
-    companion object {
-        private const val PERMISSION_REQUEST_CODE = 123
-    }
-
     override fun onItemClicked(listCancer: CancerEntity) {
         historyViewModel.delete(listCancer)
     }

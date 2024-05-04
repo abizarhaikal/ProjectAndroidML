@@ -47,12 +47,19 @@ class MainActivity : AppCompatActivity() {
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.analyzeButton.setOnClickListener { analyzeImage() }
         binding.clearButton.setOnClickListener { clearImage()}
+        binding.seeArticle.setOnClickListener { seeArticle() }
 
         if(currentImageUri == null) {
             binding.clearButton.isEnabled = false
         }
 
+        setSupportActionBar(binding.myToolbar)
 
+    }
+
+    private fun seeArticle() {
+        val intent = Intent(this@MainActivity, ArticlesActivity::class.java)
+        startActivity(intent)
     }
 
     private fun clearImage() {
@@ -80,11 +87,11 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
     private fun startGallery() {
-        launcherGalery.launch("image/*")
+        launcherGalery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     private val launcherGalery = registerForActivityResult(
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         if (uri != null) {
             currentImageUri = uri
@@ -93,6 +100,8 @@ class MainActivity : AppCompatActivity() {
             Log.d("Photo Picker" ,"No media selected")
         }
     }
+
+
 
     private fun showImage() {
         currentImageUri?.let {
@@ -122,12 +131,15 @@ class MainActivity : AppCompatActivity() {
                                 if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
                                     val sortedCategory =
                                         it[0].categories.sortedByDescending { it?.score }
-                                     displayResults =
+
+
+                                    displayResults =
                                         sortedCategory.joinToString("\n") {
                                             "${it.label}" + NumberFormat.getPercentInstance()
                                                 .format(it.score).trim()
                                         }
-                                    showToast(displayResults)
+
+                                    showToast("Successfully")
                                     moveToResult()
                                     binding.progressIndicator.visibility = View.GONE
                                 } else {
@@ -141,6 +153,7 @@ class MainActivity : AppCompatActivity() {
             )
             imageClassifierHelper.classifyStaticImage(currentImageUri!!)
         } else {
+            binding.progressIndicator.visibility = View.GONE
             showToast("No image selected")
         }
     }

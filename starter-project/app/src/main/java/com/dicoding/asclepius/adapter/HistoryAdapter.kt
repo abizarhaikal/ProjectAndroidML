@@ -32,10 +32,8 @@ class HistoryAdapter(private val context: Context, private val itemClickCallback
             init {
                 binding.btnDelete.setOnClickListener {
                     val position = adapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        val cancer = listCancer[position]
-                        itemClickCallback.onItemClicked(cancer)
-                    }
+                    val cancer = listCancer[position]
+                    itemClickCallback.onItemClicked(cancer)
                 }
             }
         fun bind(cancer: CancerEntity) {
